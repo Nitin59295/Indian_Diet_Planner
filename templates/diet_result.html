@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Your Personalized Diet Plan</h2>
+    
+    <div class="results-card fade-in">
+        <h3>Hello, {{ name }}!</h3>
+        <p>
+            Based on your BMI of <strong>{{ bmi }}</strong>, your category is <strong>{{ plan.category }}</strong>.
+        </p>
+        
+        <div class="highlight">
+            Your daily calorie target is approximately <strong>{{ plan.calories }} kcal</strong>.
+        </div>
+
+        <h4>Estimated Daily Nutrition:</h4>
+        <div class="nutrition-grid">
+            <div class="nutrition-item">
+                <span><i class="bi bi-heart-pulse-fill"></i> Protein</span>
+                <strong>{{ plan.totals.protein }}g</strong>
+            </div>
+            <div class="nutrition-item">
+                <span><i class="bi bi-fire"></i> Carbs</span>
+                <strong>{{ plan.totals.carbs }}g</strong>
+            </div>
+            <div class="nutrition-item">
+                <span><i class="bi bi-droplet-fill"></i> Fat</span>
+                <strong>{{ plan.totals.fat }}g</strong>
+            </div>
+             <div class="nutrition-item">
+                <span><i class="bi bi-cup-straw"></i> Sugar</span>
+                <strong>{{ plan.totals.sugar }}g</strong>
+            </div>
+        </div>
+
+        <h4 class="meals-title">Suggested Meals:</h4>
+        <div class="meals-grid">
+            <div class="meal-category">
+                <h5>Breakfast</h5>
+                <ul>
+                    {% for item in plan.meals.breakfast %}
+                    <li>{{ item|title }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="meal-category">
+                <h5>Lunch</h5>
+                <ul>
+                    {% for item in plan.meals.lunch %}
+                    <li>{{ item|title }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="meal-category">
+                <h5>Dinner</h5>
+                <ul>
+                    {% for item in plan.meals.dinner %}
+                    <li>{{ item|title }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="button-container">
+        <a href="{{ url_for('bmi_bp.bmi_page') }}" class="btn">Calculate Again</a>
+    </div>
+</div>
+{% endblock %}

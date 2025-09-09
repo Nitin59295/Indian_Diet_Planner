@@ -5,27 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calorie App</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-  <!-- Navigation -->
   <header>
     <nav>
       <a href="{{ url_for('user.index') }}">Home</a>
-      <a href="{{ url_for('bmi.bmi_form') }}">BMI Calculator</a>
-      <a href="{{ url_for('diet.diet_page') }}">Diet Planner</a>
+      <a href="{{ url_for('bmi_bp.bmi_page') }}">BMI Calculator</a>
+      <a href="{{ url_for('diet.diet_page') }}">My Latest Plan</a>
+      <a href="{{ url_for('diet.history') }}">History</a>
     </nav>
   </header>
-
-  <!-- Page content -->
   <main>
     {% block content %}{% endblock %}
   </main>
-
-  <!-- Footer -->
   <footer>
     <p>&copy; 2025 Calorie App</p>
   </footer>
-
-  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

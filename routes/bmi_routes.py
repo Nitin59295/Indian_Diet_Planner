@@ -1,24 +1,33 @@
+# routes/bmi_routes.py
 from flask import Blueprint, render_template, request
+from .diet_logic import calculate_bmi, get_diet_plan
+from models import db, UserHistory
+import json
 
-bmi_bp = Blueprint("bmi", __name__)
+bmi_bp = Blueprint('bmi_bp', __name__)
 
-@bmi_bp.route("/bmi", methods=["GET", "POST"])
-def bmi_form():
-    bmi = None
-    category = None
-
+@bmi_bp.route('/calculate-bmi', methods=['GET', 'POST'])
+def bmi_page():
     if request.method == "POST":
-        weight = float(request.form["weight"])
-        height = float(request.form["height"]) / 100  # convert cm → meters
-        bmi = round(weight / (height ** 2), 2)
+        name = request.form['name']
+        weight = float(request.form['weight'])
+        height = float(request.form['height'])
+        goal = request.form['goal']
 
-        if bmi < 18.5:
-            category = "Underweight"
-        elif 18.5 <= bmi < 24.9:
-            category = "Normal weight"
-        elif 25 <= bmi < 29.9:
-            category = "Overweight"
-        else:
-            category = "Obese"
+        bmi = calculate_bmi(weight, height)
+        plan = get_diet_plan(bmi, goal)
 
-    return render_template("bmi.html", bmi=bmi, category=category)
+        history_entry = UserHistory(
+            name=name,
+            weight=weight,
+            height=height,
+            bmi=bmi,
+            goal=goal,
+            diet_plan=json.dumps(plan)
+        )
+        db.session.add(history_entry)
+        db.session.commit()
+
+        return render_template("diet_result.html", name=name, bmi=bmi, plan=plan)
+
+    return render_template("bmi.html")

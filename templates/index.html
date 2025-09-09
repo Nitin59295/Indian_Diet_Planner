@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Welcome to Calorie App</h1>
-  <p>Track your BMI, calories, and get diet recommendations easily.</p>
+<div class="hero-section">
+    <div class="hero-text">
+      <h1>Your Personal Diet Planner</h1>
+      <p>Calculate your BMI and get a dynamic, nutrition-focused diet plan in seconds.</p>
+      <div class="button-container">
+          <a href="{{ url_for('bmi_bp.bmi_page') }}" class="btn hero-btn">Get Started Now</a>
+      </div>
+    </div>
+    <div class="hero-image">
+        <img src="{{ url_for('static', filename='hero-image.jpg') }}" alt="Healthy food bowl">
+    </div>
+</div>
 {% endblock %}

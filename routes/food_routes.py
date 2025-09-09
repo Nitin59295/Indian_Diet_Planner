@@ -1,47 +1,65 @@
-from flask import Blueprint, request, jsonify
+# routes/food_routes.py
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from models import db, Food # <-- Import the Food model, not the old dictionary
 
 food_bp = Blueprint('food_bp', __name__)
 
-# Sample Indian food dataset (per serving in calories)
-indian_foods = {
-    "roti": 120,
-    "rice": 200,
-    "dal": 150,
-    "paneer curry": 250,
-    "chicken curry": 300,
-    "sambar": 180,
-    "idli": 70,
-    "dosa": 160,
-    "upma": 180,
-    "poha": 160,
-    "curd": 100,
-    "milk": 90,
-    "banana": 105,
-    "apple": 80
-}
-
-# Route: List all foods
 @food_bp.route('/list', methods=['GET'])
 def list_foods():
-    return jsonify(indian_foods)
+    """Returns a JSON list of all foods from the database."""
+    all_foods = Food.query.all()
+    # Convert the list of Food objects into a list of dictionaries
+    foods_dict = [
+        {
+            "name": food.name,
+            "calories": food.calories,
+            "protein": food.protein,
+            "carbs": food.carbs,
+            "fat": food.fat,
+            "sugar": food.sugar
+        }
+        for food in all_foods
+    ]
+    return jsonify(foods_dict)
 
-# Route: Suggest diet plan based on calorie needs
 @food_bp.route('/suggest', methods=['POST'])
 def suggest_foods():
+    """Suggests a meal plan based on a calorie target using foods from the database."""
     data = request.get_json()
     calorie_needs = data.get("calories", 2000)
 
+    # Get all foods from the database
+    all_foods = Food.query.all()
+    
     plan = []
-    total = 0
+    total_calories = 0
 
-    # Simple greedy suggestion: keep adding foods until calories reached
-    for food, cal in indian_foods.items():
-        if total + cal <= calorie_needs:
-            plan.append(food)
-            total += cal
+    for food in all_foods:
+        if total_calories + food.calories <= calorie_needs:
+            plan.append(food.name)
+            total_calories += food.calories
 
     return jsonify({
         "calorie_goal": calorie_needs,
         "suggested_meals": plan,
-        "total_calories": total
+        "total_calories": total_calories
     })
+
+@food_bp.route('/add', methods=['GET', 'POST'])
+def add_food():
+    """Handles adding a new food item to the database."""
+    if request.method == 'POST':
+        new_food = Food(
+            name=request.form['name'],
+            calories=float(request.form['calories']),
+            protein=float(request.form['protein']),
+            carbs=float(request.form['carbs']),
+            fat=float(request.form['fat']),
+            sugar=float(request.form['sugar'] or 0) # Default to 0 if empty
+        )
+        db.session.add(new_food)
+        db.session.commit()
+        # Redirect to a page showing all foods, which we can create or reuse
+        return redirect(url_for('user.index'))
+        
+    return render_template('add_food.html')
