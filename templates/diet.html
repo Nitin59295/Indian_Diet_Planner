@@ -1,29 +1,73 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Get Your Diet Plan</h2>
-    <form method="POST" action="{{ url_for('diet.diet_page') }}" class="card p-4 shadow-sm">
-        <div class="mb-3">
-            <label for="goal" class="form-label">Your Goal:</label>
-            <select name="goal" id="goal" class="form-control" required>
-                <option value="">-- Select --</option>
-                <option value="weight_loss">Weight Loss</option>
-                <option value="muscle_gain">Muscle Gain</option>
-                <option value="maintenance">Maintenance</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-success w-100">Get Diet Plan</button>
-    </form>
+<div class="container">
+    <h2>My Latest Diet Plan</h2>
 
-    {% if diet_plan %}
-    <div class="alert alert-info mt-4">
-        <h4>Your Diet Plan:</h4>
-        <ul>
-            {% for item in diet_plan %}
-            <li>{{ item }}</li>
-            {% endfor %}
-        </ul>
+    {% if record and plan_data %}
+    <div class="results-card fade-in">
+        <h3>Plan for {{ record.name }}</h3>
+        <p>
+            This plan was generated based on a weight of <strong>{{ record.weight }} kg</strong>, a height of <strong>{{ record.height }} cm</strong>, and a BMI of <strong>{{ record.bmi }}</strong>.
+        </p>
+        <p>Your goal was: <strong>{{ record.goal|title }}</strong>.</p>
+        
+        <div class="highlight">
+            Daily calorie target: <strong>{{ plan_data.calories }} kcal</strong>.
+        </div>
+
+        <h4>Estimated Daily Nutrition:</h4>
+        <div class="nutrition-grid">
+            <div class="nutrition-item">
+                <span><i class="bi bi-heart-pulse-fill"></i> Protein</span>
+                <strong>{{ plan_data.totals.protein }}g</strong>
+            </div>
+            <div class="nutrition-item">
+                <span><i class="bi bi-fire"></i> Carbs</span>
+                <strong>{{ plan_data.totals.carbs }}g</strong>
+            </div>
+            <div class="nutrition-item">
+                <span><i class="bi bi-droplet-fill"></i> Fat</span>
+                <strong>{{ plan_data.totals.fat }}g</strong>
+            </div>
+             <div class="nutrition-item">
+                <span><i class="bi bi-cup-straw"></i> Sugar</span>
+                <strong>{{ plan_data.totals.sugar }}g</strong>
+            </div>
+        </div>
+
+        <h4 class="meals-title">Suggested Meals:</h4>
+        <div class="meals-grid">
+            <div class="meal-category">
+                <h5>Breakfast</h5>
+                <ul>
+                    {% for item in plan_data.meals.breakfast %}
+                    <li>{{ item|title }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="meal-category">
+                <h5>Lunch</h5>
+                <ul>
+                    {% for item in plan_data.meals.lunch %}
+                    <li>{{ item|title }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="meal-category">
+                <h5>Dinner</h5>
+                <ul>
+                    {% for item in plan_data.meals.dinner %}
+                    <li>{{ item|title }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert">
+        <p>No diet plan has been generated yet. Please use the BMI Calculator to create your first plan.</p>
+        <a href="{{ url_for('bmi_bp.bmi_page') }}" class="btn">Go to Calculator</a>
     </div>
     {% endif %}
 </div>

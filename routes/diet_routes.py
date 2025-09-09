@@ -1,19 +1,24 @@
-from flask import Blueprint, render_template, request
+# routes/diet_routes.py
+from flask import Blueprint, render_template
+from models import UserHistory
+import json
 
 diet_bp = Blueprint("diet", __name__)
 
-@diet_bp.route("/diet", methods=["GET", "POST"])
+@diet_bp.route("/my-plan")
 def diet_page():
-    diet_plan = None
+    """Fetches the most recent diet plan from the database."""
+    latest_record = UserHistory.query.order_by(UserHistory.id.desc()).first()
 
-    if request.method == "POST":
-        goal = request.form["goal"]
+    plan_data = None
+    if latest_record and latest_record.diet_plan:
+        plan_data = json.loads(latest_record.diet_plan)
 
-        if goal == "lose":
-            diet_plan = ["Oats + Fruits", "Salad + Grilled Chicken", "Soup + Vegetables"]
-        elif goal == "maintain":
-            diet_plan = ["Rice + Dal + Vegetables", "Chapati + Paneer", "Milk + Nuts"]
-        elif goal == "gain":
-            diet_plan = ["Eggs + Peanut Butter", "Chicken + Rice", "Protein Shake + Nuts"]
+    return render_template("diet.html", record=latest_record, plan_data=plan_data)
 
-    return render_template("diet.html", diet_plan=diet_plan)
+
+@diet_bp.route('/history')
+def history():
+    """Fetches all historical records from the database."""
+    records = UserHistory.query.order_by(UserHistory.id.desc()).all()
+    return render_template("history.html", records=records)

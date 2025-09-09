@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Add a New Food Item</h2>
+    <form method="POST" class="styled-form">
+        <div class="form-group">
+            <label>Food Name:</label>
+            <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+            <label>Calories:</label>
+            <input type="number" step="0.1" name="calories" required>
+        </div>
+        <div class="form-group">
+            <label>Protein (g):</label>
+            <input type="number" step="0.1" name="protein" required>
+        </div>
+        <div class="form-group">
+            <label>Carbs (g):</label>
+            <input type="number" step="0.1" name="carbs" required>
+        </div>
+        <div class="form-group">
+            <label>Fat (g):</label>
+            <input type="number" step="0.1" name="fat" required>
+        </div>
+        <div class="form-group">
+            <label>Sugar (g):</label>
+            <input type="number" step="0.1" name="sugar">
+        </div>
+        <button type="submit" class="btn">Add Food</button>
+    </form>
+</div>
+{% endblock %}
