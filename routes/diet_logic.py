@@ -1,27 +1,24 @@
-from models import Food # Import the Food model from the database
+from models import Food 
 
 def calculate_bmi(weight, height):
-    """Calculates Body Mass Index (BMI)."""
     if height <= 0:
         return 0
     height_m = height / 100
     return round(weight / (height_m ** 2), 2)
 
-def generate_dynamic_meals(calorie_target):
- 
+def generate_dynamic_meals(calorie_target, user_id):
+
     meal_plan = {"breakfast": [], "lunch": [], "dinner": []}
     totals = {"calories": 0, "protein": 0, "carbs": 0, "fat": 0, "sugar": 0}
 
-    # --- KEY CHANGE: Fetch all food items directly from the database ---
-    all_foods_from_db = Food.query.all()
+    # --- KEY CHANGE: Fetch foods for the specific user from the database ---
+    user_foods = Food.query.filter_by(user_id=user_id).all()
     
-    # If there are no foods in the database, return empty results
-    if not all_foods_from_db:
+    if not user_foods:
         return meal_plan, totals
 
-    # Convert the list of Food objects into a list of dictionaries for easier processing
     foods_list = []
-    for food in all_foods_from_db:
+    for food in user_foods:
         foods_list.append({
             "name": food.name,
             "calories": food.calories,
@@ -31,7 +28,6 @@ def generate_dynamic_meals(calorie_target):
             "sugar": food.sugar
         })
 
-    # Sort foods by protein content for better meal composition
     sorted_foods = sorted(foods_list, key=lambda item: item['protein'], reverse=True)
 
     meal_targets = {
@@ -46,10 +42,8 @@ def generate_dynamic_meals(calorie_target):
         current_meal_calories = 0
         for food_details in sorted_foods:
             if food_details['name'] not in used_foods and current_meal_calories + food_details['calories'] <= target:
-                # Add food to the meal
                 meal_plan[meal].append(food_details['name'])
 
-                # Add its nutritional values to the daily total
                 totals['calories'] += food_details['calories']
                 totals['protein'] += food_details['protein']
                 totals['carbs'] += food_details['carbs']
@@ -59,14 +53,12 @@ def generate_dynamic_meals(calorie_target):
                 current_meal_calories += food_details['calories']
                 used_foods.add(food_details['name'])
 
-    # Round totals for cleaner display
     for key in totals:
         totals[key] = round(totals[key], 1)
 
     return meal_plan, totals
 
-def get_diet_plan(bmi, goal="maintain"):
-    """Generates a diet plan based on BMI, user goal, and detailed nutritional data."""
+def get_diet_plan(user_id, bmi, goal="maintain"):
     if bmi < 18.5:
         category = "Underweight"
         calories = 2500
@@ -85,8 +77,7 @@ def get_diet_plan(bmi, goal="maintain"):
     elif goal == "lose":
         calories -= 500
 
-    # Generate the dynamic meal plan and get the nutritional totals
-    diet_plan, nutrition_totals = generate_dynamic_meals(calories)
+    diet_plan, nutrition_totals = generate_dynamic_meals(calories, user_id)
 
     return {
         "category": category,

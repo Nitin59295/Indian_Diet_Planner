@@ -1,34 +1,34 @@
+# app.py
 from flask import Flask
-from models import db
-from routes.user_routes import user_bp
-from routes.bmi_routes import bmi_bp
-from routes.diet_routes import diet_bp
-from routes.food_routes import food_bp
+from models import User
+from extensions import db, login_manager
+from routes import user_bp, bmi_bp, diet_bp, food_bp, auth_bp
 
-# Create the Flask application instance
 app = Flask(__name__)
 
-# --- Configuration ---
 app.config['SECRET_KEY'] = 'a-very-secure-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///calorie_app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# --- Initialize Extensions ---
 db.init_app(app)
+login_manager.init_app(app)
 
-# --- Define a CLI command to create the database tables ---
+login_manager.login_view = 'auth.login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 @app.cli.command("init-db")
 def init_db_command():
-    """Creates the database tables."""
     db.create_all()
     print("Initialized the database.")
 
-# --- Register Blueprints ---
 app.register_blueprint(user_bp)
 app.register_blueprint(bmi_bp)
 app.register_blueprint(diet_bp)
-app.register_blueprint(food_bp, url_prefix='/api/food')
+app.register_blueprint(food_bp, url_prefix='/food')
+app.register_blueprint(auth_bp)
 
-# --- Run the App ---
 if __name__ == "__main__":
     app.run(debug=True)
