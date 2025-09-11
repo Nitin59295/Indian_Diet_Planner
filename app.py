@@ -30,5 +30,6 @@ app.register_blueprint(diet_bp)
 app.register_blueprint(food_bp, url_prefix='/food')
 app.register_blueprint(auth_bp)
 
+
 if __name__ == "__main__":
     app.run(debug=True)
