@@ -1,24 +1,24 @@
 # routes/diet_routes.py
 from flask import Blueprint, render_template
 from models import UserHistory
+from flask_login import login_required, current_user
 import json
 
 diet_bp = Blueprint("diet", __name__)
 
 @diet_bp.route("/my-plan")
+@login_required
 def diet_page():
-    """Fetches the most recent diet plan from the database."""
-    latest_record = UserHistory.query.order_by(UserHistory.id.desc()).first()
-
+    latest_record = UserHistory.query.filter_by(user_id=current_user.id).order_by(UserHistory.id.desc()).first()
+    
     plan_data = None
     if latest_record and latest_record.diet_plan:
         plan_data = json.loads(latest_record.diet_plan)
 
     return render_template("diet.html", record=latest_record, plan_data=plan_data)
 
-
 @diet_bp.route('/history')
+@login_required
 def history():
-    """Fetches all historical records from the database."""
-    records = UserHistory.query.order_by(UserHistory.id.desc()).all()
+    records = UserHistory.query.filter_by(user_id=current_user.id).order_by(UserHistory.id.desc()).all()
     return render_template("history.html", records=records)
