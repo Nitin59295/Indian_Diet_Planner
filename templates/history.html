@@ -2,7 +2,16 @@
 
 {% block content %}
 <div class="container">
-    <h2>Calculation History</h2>
+    <div class="history-header">
+        <h2>Calculation History</h2>
+        {% if records %}
+        <form method="POST" action="{{ url_for('diet.delete_history') }}" onsubmit="return confirm('Are you sure you want to delete your entire history? This action cannot be undone.');">
+            <button type="submit" class="btn delete-btn">
+                <i class="bi bi-trash"></i> Delete All History
+            </button>
+        </form>
+        {% endif %}
+    </div>
 
     {% if records %}
     <table class="history-table">
@@ -28,9 +37,9 @@
         </tbody>
     </table>
     {% else %}
-    <div class="alert">
+    <div class="alert" style="margin-top: 20px;">
         <p>You have no saved history.</p>
     </div>
     {% endif %}
 </div>
-{% endblock %}s
+{% endblock %}

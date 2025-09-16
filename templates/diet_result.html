@@ -1,83 +1,55 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container">
     <h2>Your Personalized Diet Plan</h2>
-    
     <div class="results-card fade-in">
         <h3>Hello, {{ name }}!</h3>
-        <p>
-            Based on your BMI of <strong>{{ bmi }}</strong>, your category is <strong>{{ plan.category }}</strong>.
-        </p>
-        
-        <div class="highlight">
-            Your daily calorie target is approximately <strong>{{ plan.calories }} kcal</strong>.
-        </div>
-
+        <p>Based on your BMI of <strong>{{ bmi }}</strong>, your category is <strong>{{ plan.category }}</strong>.</p>
+        <div class="highlight">Your daily calorie target is approximately <strong>{{ plan.calories }} kcal</strong>.</div>
         <h4>Estimated Daily Nutrition:</h4>
         <div class="nutrition-grid">
-            <div class="nutrition-item">
-                <span><i class="bi bi-heart-pulse-fill"></i> Protein</span>
-                <strong>{{ plan.totals.protein }}g</strong>
-            </div>
-            <div class="nutrition-item">
-                <span><i class="bi bi-fire"></i> Carbs</span>
-                <strong>{{ plan.totals.carbs }}g</strong>
-            </div>
-            <div class="nutrition-item">
-                <span><i class="bi bi-droplet-fill"></i> Fat</span>
-                <strong>{{ plan.totals.fat }}g</strong>
-            </div>
-             <div class="nutrition-item">
-                <span><i class="bi bi-cup-straw"></i> Sugar</span>
-                <strong>{{ plan.totals.sugar }}g</strong>
-            </div>
+            <div class="nutrition-item"><span><i class="bi bi-heart-pulse-fill"></i> Protein</span><strong>{{ plan.totals.protein }}g</strong></div>
+            <div class="nutrition-item"><span><i class="bi bi-fire"></i> Carbs</span><strong>{{ plan.totals.carbs }}g</strong></div>
+            <div class="nutrition-item"><span><i class="bi bi-droplet-fill"></i> Fat</span><strong>{{ plan.totals.fat }}g</strong></div>
+            <div class="nutrition-item"><span><i class="bi bi-cup-straw"></i> Sugar</span><strong>{{ plan.totals.sugar }}g</strong></div>
         </div>
-
-        <h4 class="meals-title">Suggested Meals:</h4>
-        <div class="meals-grid">
-            <div class="meal-category">
-                <h5>Breakfast</h5>
-                <ul>
-                    {% for item in plan.meals.breakfast %}
-                    <li>{{ item|title }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="meal-category">
-                <h5>Lunch</h5>
-                <ul>
-                    {% for item in plan.meals.lunch %}
-                    <li>{{ item|title }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="meal-category">
-                <h5>Dinner</h5>
-                <ul>
-                    {% for item in plan.meals.dinner %}
-                    <li>{{ item|title }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+        <h4 class="meals-title">Suggested Meal Schedule</h4>
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Meal</th>
+                    <th>Suggested Foods</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for meal in plan.meals %}
+                <tr>
+                    <td><strong>{{ meal.time }}</strong></td>
+                    <td>{{ meal.name }}</td>
+                    <td>
+                        <ul class="meal-food-list">
+                            {% for item in meal.foods %}
+                            <li class="food-item">
+                                <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}" class="food-image">
+                                <div class="food-info">
+                                    <strong>{{ item.name|title }}</strong>
+                                    <div class="food-details">
+                                        <span>{{ item.calories|round(0) }} kcal</span> | <span>P: {{ item.protein }}g</span> | <span>F: {{ item.fat }}g</span>
+                                    </div>
+                                </div>
+                            </li>
+                            {% else %}<li>No items suggested.</li>{% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-
-    {% if ai_recommendation and not ai_recommendation.error %}
-    <div class="results-card fade-in">
-        <h4>AI Recommended Meal</h4>
-        <p><strong>{{ ai_recommendation.meal_name }}</strong></p>
-        <ul>
-            <li>Calories: {{ ai_recommendation.calories }} kcal</li>
-            <li>Protein: {{ ai_recommendation.protein }} g</li>
-            <li>Carbs: {{ ai_recommendation.carbs }} g</li>
-            <li>Fat: {{ ai_recommendation.fat }} g</li>
-        </ul>
-    </div>
-    {% endif %}
-    
-    <div class="button-container">
+    <div class="button-container" style="margin-top: 20px; display: flex; justify-content: center; gap: 20px;">
         <a href="{{ url_for('bmi_bp.bmi_page') }}" class="btn">Calculate Again</a>
+        <a href="{{ url_for('diet.download_plan') }}" class="btn" style="background-image: linear-gradient(45deg, #3498DB, #2980B9); box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4);"><i class="bi bi-download"></i> Download as PDF</a>
     </div>
 </div>
 {% endblock %}

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash
 from models import db, Food
 from flask_login import login_required, current_user
 
@@ -29,6 +29,8 @@ def add_food():
         )
         db.session.add(new_food)
         db.session.commit()
-        return redirect(url_for('user.index'))
+        # --- IMPROVED UX ---
+        flash(f"'{new_food.name}' was successfully added to your food list!")
+        return redirect(url_for('food_bp.add_food'))
         
     return render_template('add_food.html')

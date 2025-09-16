@@ -289,6 +289,13 @@ h4 {
   border-radius: 6px;
   margin-bottom: 8px;
   border-left: 3px solid var(--primary-dark);
+  line-height: 1.4;
+}
+
+.food-details {
+  font-size: 0.85em;
+  color: #5D6D7E;
+  margin-top: 4px;
 }
 
 /* Animation for result cards */
@@ -343,4 +350,115 @@ footer {
   color: #999;
   border-top: 1px solid #EAECEE;
   background: var(--background-color);
+}
+
+/* --- 7. AI Dashboard & Accordion Styles --- */
+.ai-response-box {
+  margin-top: 25px;
+  min-height: 50px;
+}
+
+textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #D5D8DC;
+  box-sizing: border-box;
+  font-family: var(--font-family);
+  font-size: 1em;
+  transition: all 0.3s ease-in-out;
+  resize: vertical;
+}
+
+textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(46, 204, 113, 0.2);
+  outline: none;
+}
+
+.chat-response p {
+    text-align: left;
+    white-space: pre-wrap; /* This preserves line breaks from the AI's response */
+    line-height: 1.6;
+}
+
+.accordion-container .results-card {
+    padding: 0;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.accordion-header:hover {
+    background-color: var(--light-gray);
+}
+
+.accordion-header h4 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.accordion-header h4 i {
+    margin-right: 15px;
+    font-size: 1.2em;
+    color: var(--primary-color);
+}
+
+.toggle-icon {
+    font-size: 1.4em;
+    transition: transform 0.4s ease;
+}
+
+.accordion-header.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    /* Add the padding back that we removed from .results-card */
+    padding: 0 30px;
+}
+
+.accordion-content > * {
+    padding-bottom: 30px;
+}
+
+.history-table td ul.meal-food-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.history-table td {
+    vertical-align: top;
+}
+/* In static/css/style.css, add at the end */
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.delete-btn {
+    background-image: linear-gradient(45deg, #E74C3C, #C0392B); /* Red gradient */
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
+    padding: 10px 20px;
+    font-size: 15px;
+}
+
+.delete-btn:hover {
+    box-shadow: 0 7px 15px rgba(231, 76, 60, 0.5);
 }

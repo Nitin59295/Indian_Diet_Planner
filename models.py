@@ -1,8 +1,6 @@
-from extensions import db # <-- FIX: Import the shared db instance
+from extensions import db
 from flask_login import UserMixin
 from datetime import date
-
-# The line "db = SQLAlchemy()" has been removed.
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -28,14 +26,3 @@ class Food(db.Model):
     carbs = db.Column(db.Float, nullable=False)
     fat = db.Column(db.Float, nullable=False)
     sugar = db.Column(db.Float, nullable=False)
-
-class Log(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    food_name = db.Column(db.String(100), nullable=False)
-    calories = db.Column(db.Float, nullable=False)
-    protein = db.Column(db.Float, nullable=False)
-    carbs = db.Column(db.Float, nullable=False)
-    fat = db.Column(db.Float, nullable=False)
-    sugar = db.Column(db.Float, nullable=False)
-    date = db.Column(db.Date, nullable=False, default=date.today)

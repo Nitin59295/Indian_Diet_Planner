@@ -24,7 +24,7 @@ def register():
         flash('Registration successful! Please log in.')
         return redirect(url_for('auth.login'))
 
-    return render_template('register.html') # <-- FIX: Corrected template path
+    return render_template('register.html') 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -40,7 +40,7 @@ def login():
         else:
             flash('Login unsuccessful. Please check your username and password.')
 
-    return render_template('login.html') # <-- FIX: Corrected template path
+    return render_template('login.html') 
 
 @auth_bp.route('/logout')
 @login_required

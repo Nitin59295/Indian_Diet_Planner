@@ -2,76 +2,250 @@
 
 {% block content %}
 <div class="container">
-    <h2>AI Meal Recommender</h2>
-    <p>Get a smart meal suggestion based on your daily nutritional needs.</p>
+    <h2>AI Nutrition Assistant</h2>
+    <p>Your dashboard for smart meal recommendations, analysis, and planning.</p>
     
-    <div class="results-card" style="text-align: left;">
-        <h4>Your Recommendation</h4>
-        <div class="form-group">
-            <label for="calories">Calories Remaining Today:</label>
-            <input type="number" id="calories" placeholder="e.g., 700">
+    <div class="accordion-container">
+
+        <div class="results-card accordion-item">
+            <div class="accordion-header" data-target="recommenderContent">
+                <h4><i class="bi bi-lightbulb"></i> Quick Meal Idea</h4>
+                <i class="bi bi-chevron-down toggle-icon"></i>
+            </div>
+            <div class="accordion-content" id="recommenderContent">
+                <p>Get a smart meal suggestion based on your remaining daily needs.</p>
+                <div class="form-group">
+                    <label for="calories">Calories Remaining Today:</label>
+                    <input type="number" id="calories" placeholder="e.g., 700">
+                </div>
+                <div class="form-group">
+                    <label for="protein">Protein (g) Remaining Today:</label>
+                    <input type="number" id="protein" placeholder="e.g., 40">
+                </div>
+                <button id="getRecommendationBtn" class="btn">Get AI Recommendation</button>
+                <div id="aiResult" class="ai-response-box"></div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="protein">Protein (g) Remaining Today:</label>
-            <input type="number" id="protein" placeholder="e.g., 40">
+
+        <div class="results-card accordion-item">
+            <div class="accordion-header" data-target="analyzerContent">
+                <h4><i class="bi bi-clipboard2-data"></i> Analyze a Meal</h4>
+                <i class="bi bi-chevron-down toggle-icon"></i>
+            </div>
+            <div class="accordion-content" id="analyzerContent">
+                <p>Describe a meal, and the AI will estimate its nutritional content.</p>
+                <div class="form-group">
+                    <label for="mealDescription">Enter Meal Description:</label>
+                    <textarea id="mealDescription" rows="3" placeholder="e.g., 1 bowl of dal, 2 roti, and a side salad"></textarea>
+                </div>
+                <button id="analyzeMealBtn" class="btn">Analyze Meal</button>
+                <div id="analysisResult" class="ai-response-box"></div>
+            </div>
         </div>
-        
-        <button id="getRecommendationBtn" class="btn">Get AI Recommendation</button>
-        
-        <div id="aiResult" style="margin-top: 25px;">
-            <!-- AI recommendation will be displayed here -->
+
+        <div class="results-card accordion-item">
+            <div class="accordion-header" data-target="plannerContent">
+                <h4><i class="bi bi-calendar-check"></i> Generate a Full Day's Plan</h4>
+                <i class="bi bi-chevron-down toggle-icon"></i>
+            </div>
+            <div class="accordion-content" id="plannerContent">
+                <p>Create a complete, dynamic meal plan for the day.</p>
+                <div class="form-group">
+                    <label for="totalCalories">Total Daily Calories:</label>
+                    <input type="number" id="totalCalories" placeholder="e.g., 2000">
+                </div>
+                <div class="form-group">
+                    <label for="dietPreference">Dietary Preference (optional):</label>
+                    <input type="text" id="dietPreference" placeholder="e.g., vegetarian, high-protein">
+                </div>
+                <button id="generatePlanBtn" class="btn">Generate Plan</button>
+                <div id="planResult" class="ai-response-box"></div>
+            </div>
         </div>
+
+        <div class="results-card accordion-item">
+            <div class="accordion-header" data-target="chatContent">
+                <h4><i class="bi bi-patch-question"></i> Ask Anything</h4>
+                <i class="bi bi-chevron-down toggle-icon"></i>
+            </div>
+            <div class="accordion-content" id="chatContent">
+                <p>Ask any question about Indian diets, nutrition, or healthy eating.</p>
+                <div class="form-group">
+                    <label for="chatQuestion">Your Question:</label>
+                    <textarea id="chatQuestion" rows="3" placeholder="e.g., What are some good vegetarian sources of protein?"></textarea>
+                </div>
+                <button id="askChatBtn" class="btn">Get Answer</button>
+                <div id="chatResult" class="ai-response-box chat-response"></div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <script>
-    // JavaScript to call your AI backend goes here...
-    document.getElementById('getRecommendationBtn').addEventListener('click', function() {
+    // --- ACCORDION LOGIC ---
+    document.addEventListener('DOMContentLoaded', function () {
+        const headers = document.querySelectorAll('.accordion-header');
+        
+        headers.forEach(header => {
+            header.addEventListener('click', function () {
+                const targetId = this.dataset.target;
+                const content = document.getElementById(targetId);
+                const allContents = document.querySelectorAll('.accordion-content');
+                const allHeaders = document.querySelectorAll('.accordion-header');
+
+                // Check if the clicked item is already active
+                const isActive = this.classList.contains('active');
+
+                // Close all items
+                allHeaders.forEach(h => h.classList.remove('active'));
+                allContents.forEach(c => c.style.maxHeight = null);
+
+                // If the clicked item was NOT active, open it
+                if (!isActive) {
+                    this.classList.add('active');
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        });
+    });
+
+
+    // Helper function to handle API calls
+    async function makeApiCall(url, body, button, resultDiv) {
+        // ... (rest of the script is the same as before)
+        resultDiv.innerHTML = '<p>🧠 Thinking... Please wait.</p>';
+        button.disabled = true;
+        button.textContent = 'Generating...';
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            return { error: 'An unexpected error occurred. Please try again.' };
+        } finally {
+            button.disabled = false;
+        }
+    }
+
+    // --- Feature 1: AI Meal Recommender ---
+    document.getElementById('getRecommendationBtn').addEventListener('click', async function() {
+        // ... (rest of the script is the same as before)
         const calories = document.getElementById('calories').value;
         const protein = document.getElementById('protein').value;
         const resultDiv = document.getElementById('aiResult');
-        const btn = this;
-
+        
         if (!calories || !protein) {
             resultDiv.innerHTML = `<p style="color: red;">Please enter both remaining calories and protein.</p>`;
             return;
         }
 
-        resultDiv.innerHTML = '<p>🧠 Thinking... Please wait, the AI model may be starting up.</p>';
-        btn.disabled = true;
-        btn.textContent = 'Generating...';
+        const data = await makeApiCall('/ai/recommend-meal', { calories: parseInt(calories), protein: parseInt(protein) }, this, resultDiv);
+        
+        this.textContent = 'Get AI Recommendation';
+        if (data.error) {
+            resultDiv.innerHTML = `<p style="color: red;"><strong>Error:</strong> ${data.error}</p>`;
+        } else {
+            resultDiv.innerHTML = `
+                <div class="highlight" style="margin: 0;">Suggested Meal: <strong>${data.meal_name}</strong></div>
+                <div class="nutrition-grid" style="margin-top: 15px;">
+                    <div class="nutrition-item"><span>Calories</span><strong>${data.calories} kcal</strong></div>
+                    <div class="nutrition-item"><span>Protein</span><strong>${data.protein}g</strong></div>
+                    <div class="nutrition-item"><span>Carbs</span><strong>${data.carbs}g</strong></div>
+                    <div class="nutrition-item"><span>Fat</span><strong>${data.fat}g</strong></div>
+                </div>`;
+        }
+    });
 
-        fetch('/ai/recommend-meal', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                calories: parseInt(calories),
-                protein: parseInt(protein)
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                resultDiv.innerHTML = `<p style="color: red;"><strong>Error:</strong> ${data.error}</p>`;
-            } else {
-                resultDiv.innerHTML = `
-                    <div class="highlight">Suggested Meal: <strong>${data.meal_name}</strong></div>
-                    <div class="nutrition-grid">
-                        <div class="nutrition-item"><span>Calories</span><strong>${data.calories} kcal</strong></div>
-                        <div class="nutrition-item"><span>Protein</span><strong>${data.protein}g</strong></div>
-                        <div class="nutrition-item"><span>Carbs</span><strong>${data.carbs}g</strong></div>
-                        <div class="nutrition-item"><span>Fat</span><strong>${data.fat}g</strong></div>
-                    </div>`;
+    // --- Feature 2: Meal Analyzer ---
+    document.getElementById('analyzeMealBtn').addEventListener('click', async function() {
+        // ... (rest of the script is the same as before)
+        const description = document.getElementById('mealDescription').value;
+        const resultDiv = document.getElementById('analysisResult');
+
+        if (!description) {
+            resultDiv.innerHTML = `<p style="color: red;">Please enter a meal description.</p>`;
+            return;
+        }
+
+        const data = await makeApiCall('/ai/analyze-meal', { description }, this, resultDiv);
+
+        this.textContent = 'Analyze Meal';
+        if (data.error) {
+            resultDiv.innerHTML = `<p style="color: red;"><strong>Error:</strong> ${data.error}</p>`;
+        } else {
+            resultDiv.innerHTML = `
+                <div class="highlight" style="margin: 0;">Estimated Nutrition</div>
+                <div class="nutrition-grid" style="margin-top: 15px;">
+                    <div class="nutrition-item"><span>Calories</span><strong>${data.total_calories} kcal</strong></div>
+                    <div class="nutrition-item"><span>Protein</span><strong>${data.total_protein}g</strong></div>
+                    <div class="nutrition-item"><span>Carbs</span><strong>${data.total_carbs}g</strong></div>
+                    <div class="nutrition-item"><span>Fat</span><strong>${data.total_fat}g</strong></div>
+                </div>`;
+        }
+    });
+
+    // --- Feature 3: Full Day Planner ---
+    document.getElementById('generatePlanBtn').addEventListener('click', async function() {
+        // ... (rest of the script is the same as before)
+        const calories = document.getElementById('totalCalories').value;
+        const preference = document.getElementById('dietPreference').value;
+        const resultDiv = document.getElementById('planResult');
+
+        if (!calories) {
+            resultDiv.innerHTML = `<p style="color: red;">Please enter a total calorie target.</p>`;
+            return;
+        }
+
+        const data = await makeApiCall('/ai/generate-plan', { calories: parseInt(calories), preference }, this, resultDiv);
+
+        this.textContent = 'Generate Plan';
+        if (data.error) {
+            resultDiv.innerHTML = `<p style="color: red;"><strong>Error:</strong> ${data.error}</p>`;
+        } else {
+            let html = '<div class="meals-grid" style="grid-template-columns: 1fr;">';
+            for (const meal in data) {
+                html += `<div class="meal-category"><h5>${meal.charAt(0).toUpperCase() + meal.slice(1)}</h5><ul>`;
+                data[meal].forEach(item => {
+                    html += `<li>
+                        <strong>${item.name}</strong>
+                        <div class="food-details">
+                            <span>${item.calories} kcal</span> | <span>P: ${item.protein}g</span>
+                        </div>
+                    </li>`;
+                });
+                html += '</ul></div>';
             }
-        })
-        .catch(error => {
-            resultDiv.innerHTML = `<p style="color: red;">An unexpected error occurred.</p>`;
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.textContent = 'Get AI Recommendation';
-        });
+            html += '</div>';
+            resultDiv.innerHTML = html;
+        }
+    });
+
+    // --- Feature 4: Ask Anything Chatbot ---
+    document.getElementById('askChatBtn').addEventListener('click', async function() {
+        // ... (rest of the script is the same as before)
+        const question = document.getElementById('chatQuestion').value;
+        const resultDiv = document.getElementById('chatResult');
+
+        if (!question) {
+            resultDiv.innerHTML = `<p style="color: red;">Please enter a question.</p>`;
+            return;
+        }
+        
+        const data = await makeApiCall('/ai/ask-anything', { question }, this, resultDiv);
+
+        this.textContent = 'Get Answer';
+        if (data.error) {
+            resultDiv.innerHTML = `<p style="color: red;"><strong>Error:</strong> ${data.error}</p>`;
+        } else {
+            const formattedAnswer = data.answer.replace(/\n/g, '<br>');
+            resultDiv.innerHTML = `<p>${formattedAnswer}</p>`;
+        }
     });
 </script>
 {% endblock %}
-
