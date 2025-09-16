@@ -1,7 +1,5 @@
-from models import Food, User # We need the User model to check for the user
+from models import Food, User
 
-# --- NEW: Default Food Data ---
-# This list will be used as a fallback if a user has no custom foods.
 default_indian_foods = {
     "roti": {"calories": 120, "protein": 4, "carbs": 25, "fat": 1, "sugar": 1},
     "rice": {"calories": 200, "protein": 4, "carbs": 45, "fat": 0.5, "sugar": 0},
@@ -21,7 +19,6 @@ default_indian_foods = {
 
 
 def calculate_bmi(weight, height):
-    """Calculates Body Mass Index (BMI)."""
     if height <= 0:
         return 0
     height_m = height / 100
@@ -29,30 +26,22 @@ def calculate_bmi(weight, height):
 
 
 def generate_dynamic_meals(calorie_target, user_id):
-    """
-    Creates a meal plan. It prioritizes a user's custom foods, but
-    falls back to a default list if the user has none.
-    """
     meal_plan = {"breakfast": [], "lunch": [], "dinner": []}
     totals = {"calories": 0, "protein": 0, "carbs": 0, "fat": 0, "sugar": 0}
     
-    # --- KEY CHANGE: Check for user's custom foods ---
     user_foods = Food.query.filter_by(user_id=user_id).all()
     
     food_source = {}
     
     if user_foods:
-        # If the user has custom foods, convert them to the dictionary format we need
         for food in user_foods:
             food_source[food.name] = {
                 "calories": food.calories, "protein": food.protein,
                 "carbs": food.carbs, "fat": food.fat, "sugar": food.sugar
             }
     else:
-        # If the user has no custom foods, use the default list
         food_source = default_indian_foods
 
-    # Sort foods by protein content for better meal composition
     sorted_foods = sorted(food_source.items(), key=lambda item: item[1]['protein'], reverse=True)
 
     meal_targets = {
@@ -69,14 +58,12 @@ def generate_dynamic_meals(calorie_target, user_id):
             if food_name not in used_foods and current_meal_calories + details['calories'] <= target:
                 meal_plan[meal].append(food_name)
 
-                # Add its nutritional values to the daily total
                 for key in totals:
                     totals[key] += details[key]
 
                 current_meal_calories += details['calories']
                 used_foods.add(food_name)
 
-    # Round totals for cleaner display
     for key in totals:
         totals[key] = round(totals[key], 1)
 
@@ -84,7 +71,6 @@ def generate_dynamic_meals(calorie_target, user_id):
 
 
 def get_diet_plan(user_id, bmi, goal="maintain"):
-    """Generates a diet plan based on BMI, user goal, and available food data."""
     if bmi < 18.5:
         category = "Underweight"
         calories = 2500
@@ -103,7 +89,6 @@ def get_diet_plan(user_id, bmi, goal="maintain"):
     elif goal == "lose":
         calories -= 500
 
-    # Generate the dynamic meal plan using the user's ID
     diet_plan, nutrition_totals = generate_dynamic_meals(calories, user_id)
 
     return {

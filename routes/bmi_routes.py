@@ -1,4 +1,3 @@
-# routes/bmi_routes.py
 from flask import Blueprint, render_template, request
 from .diet_logic import calculate_bmi, get_diet_plan
 from models import db, UserHistory

@@ -62,6 +62,19 @@
             </div>
         </div>
     </div>
+
+    {% if ai_recommendation and not ai_recommendation.error %}
+    <div class="results-card fade-in">
+        <h4>AI Recommended Meal</h4>
+        <p><strong>{{ ai_recommendation.meal_name }}</strong></p>
+        <ul>
+            <li>Calories: {{ ai_recommendation.calories }} kcal</li>
+            <li>Protein: {{ ai_recommendation.protein }} g</li>
+            <li>Carbs: {{ ai_recommendation.carbs }} g</li>
+            <li>Fat: {{ ai_recommendation.fat }} g</li>
+        </ul>
+    </div>
+    {% endif %}
     
     <div class="button-container">
         <a href="{{ url_for('bmi_bp.bmi_page') }}" class="btn">Calculate Again</a>

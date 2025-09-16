@@ -1,4 +1,3 @@
-# routes/food_routes.py
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for
 from models import db, Food
 from flask_login import login_required, current_user

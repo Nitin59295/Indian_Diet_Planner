@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>AI Meal Recommender</h2>
+    <p>Get a smart meal suggestion based on your daily nutritional needs.</p>
+    
+    <div class="results-card" style="text-align: left;">
+        <h4>Your Recommendation</h4>
+        <div class="form-group">
+            <label for="calories">Calories Remaining Today:</label>
+            <input type="number" id="calories" placeholder="e.g., 700">
+        </div>
+        <div class="form-group">
+            <label for="protein">Protein (g) Remaining Today:</label>
+            <input type="number" id="protein" placeholder="e.g., 40">
+        </div>
+        
+        <button id="getRecommendationBtn" class="btn">Get AI Recommendation</button>
+        
+        <div id="aiResult" style="margin-top: 25px;">
+            <!-- AI recommendation will be displayed here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript to call your AI backend goes here...
+    document.getElementById('getRecommendationBtn').addEventListener('click', function() {
+        const calories = document.getElementById('calories').value;
+        const protein = document.getElementById('protein').value;
+        const resultDiv = document.getElementById('aiResult');
+        const btn = this;
+
+        if (!calories || !protein) {
+            resultDiv.innerHTML = `<p style="color: red;">Please enter both remaining calories and protein.</p>`;
+            return;
+        }
+
+        resultDiv.innerHTML = '<p>🧠 Thinking... Please wait, the AI model may be starting up.</p>';
+        btn.disabled = true;
+        btn.textContent = 'Generating...';
+
+        fetch('/ai/recommend-meal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                calories: parseInt(calories),
+                protein: parseInt(protein)
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                resultDiv.innerHTML = `<p style="color: red;"><strong>Error:</strong> ${data.error}</p>`;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="highlight">Suggested Meal: <strong>${data.meal_name}</strong></div>
+                    <div class="nutrition-grid">
+                        <div class="nutrition-item"><span>Calories</span><strong>${data.calories} kcal</strong></div>
+                        <div class="nutrition-item"><span>Protein</span><strong>${data.protein}g</strong></div>
+                        <div class="nutrition-item"><span>Carbs</span><strong>${data.carbs}g</strong></div>
+                        <div class="nutrition-item"><span>Fat</span><strong>${data.fat}g</strong></div>
+                    </div>`;
+            }
+        })
+        .catch(error => {
+            resultDiv.innerHTML = `<p style="color: red;">An unexpected error occurred.</p>`;
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.textContent = 'Get AI Recommendation';
+        });
+    });
+</script>
+{% endblock %}
+

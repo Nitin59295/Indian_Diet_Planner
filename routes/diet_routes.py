@@ -1,5 +1,7 @@
 # routes/diet_routes.py
 from flask import Blueprint, render_template
+# The line below was fixed by adding a '.' before 'diet_logic'
+from .diet_logic import get_diet_plan
 from models import UserHistory
 from flask_login import login_required, current_user
 import json
@@ -22,3 +24,4 @@ def diet_page():
 def history():
     records = UserHistory.query.filter_by(user_id=current_user.id).order_by(UserHistory.id.desc()).all()
     return render_template("history.html", records=records)
+
