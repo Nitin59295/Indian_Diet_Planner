@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 app = Flask(__name__)
 
-# --- Database and Login Config (no changes here) ---
 instance_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance')
 os.makedirs(instance_path, exist_ok=True)
 app.config['SECRET_KEY'] = 'a-very-secure-secret-key-that-is-long'

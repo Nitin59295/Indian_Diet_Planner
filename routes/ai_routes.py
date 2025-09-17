@@ -1,5 +1,3 @@
-# calorie_app/routes/ai_routes.py
-
 import os
 import json
 from flask import Blueprint, request, jsonify
@@ -15,7 +13,6 @@ try:
     genai.configure(api_key=gemini_api_key)
 except Exception as e:
     print(f"Error configuring Gemini API: {e}")
-# -----------------------------
 
 @ai_bp.route("/recommend-meal", methods=["POST"])
 def recommend_meal():
@@ -82,7 +79,6 @@ def generate_plan():
     except Exception as e:
         return jsonify({"error": f"An error occurred with the Gemini API: {e}"}), 500
 
-# --- NEW ENDPOINT: ASK ANYTHING CHATBOT ---
 @ai_bp.route("/ask-anything", methods=["POST"])
 def ask_anything():
     data = request.get_json()
@@ -97,11 +93,9 @@ def ask_anything():
     )
 
     try:
-        # Note: We do NOT use JSON mode here because we want a conversational text answer.
         model = genai.GenerativeModel('gemini-1.5-flash-latest')
         response = model.generate_content(prompt)
         
-        # We wrap the plain text answer in a JSON object for the frontend.
         return jsonify({"answer": response.text})
     except Exception as e:
         return jsonify({"error": f"An error occurred with the Gemini API: {e}"}), 500

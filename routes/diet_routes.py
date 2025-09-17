@@ -20,7 +20,6 @@ def history():
     records = UserHistory.query.filter_by(user_id=current_user.id).order_by(UserHistory.id.desc()).all()
     return render_template("history.html", records=records)
 
-# --- NEW ROUTE for DELETING HISTORY ---
 @diet_bp.route('/delete-history', methods=['POST'])
 @login_required
 def delete_history():
