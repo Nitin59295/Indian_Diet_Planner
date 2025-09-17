@@ -1,107 +1,204 @@
-Calorie Tracker & Diet Planner 🥗
-A dynamic web application built with Flask that allows users to calculate their Body Mass Index (BMI), receive personalized diet plans with detailed nutritional information, and track their history.
+# 🥗 Calorie Tracker & AI Diet Planner
 
-✨ Features
-BMI Calculation: Users can input their name, weight, and height to get an accurate BMI calculation.
+![Python](https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python)
+![Flask](https://img.shields.io/badge/Flask-2.x-black?style=for-the-badge&logo=flask)
+![SQLite](https://img.shields.io/badge/SQLite-3-blue?style=for-the-badge&logo=sqlite)
 
-Dynamic Diet Plans: Based on the user's BMI and goals (weight loss, maintenance, or muscle gain), the app generates a unique diet plan.
+A dynamic web application built with Flask that provides users with a comprehensive suite of tools for diet and nutrition management.  
+The app calculates **BMI**, generates **personalized diet plans**, and leverages the **Google Gemini API** for interactive nutritional advice.
 
-Detailed Nutrition: Each diet plan includes an estimated daily total for calories, protein, carbs, fat, and sugar.
+---
 
-Custom Food Database: Users can add their own food items with detailed nutritional information to a persistent database.
+## 📸 Screenshots
 
-User History: The application saves every BMI calculation and generated plan, allowing users to track their progress over time.
+| Homepage | Diet Plan | AI Dashboard |
+| :---: | :---: | :---: |
+| ![Homepage](static/images/screenshots/homepage.png) | ![Diet Plan](static/images/screenshots/diet_plan.png) | ![AI Dashboard](static/images/screenshots/ai_dashboard.png) |
 
-Interactive Frontend: A modern, responsive user interface with a hero image, smooth animations, and icons for a better user experience.
+> 📝 Place your actual screenshots inside:  
+> `static/images/screenshots/`  
+> and replace these placeholder names.
 
-🛠️ Technologies Used
-Backend: Python, Flask
+---
 
-Database: Flask-SQLAlchemy (with SQLite)
+## ✨ Key Features
 
-Frontend: HTML, CSS, Jinja2
+- **👤 User Authentication** – Secure registration and login system.
+- **🔢 BMI Calculator** – Calculates Body Mass Index.
+- **📅 Personalized Diet Plans**  
+  - Full-day meal plan based on BMI & goals.  
+  - **Timed eating schedule**.  
+  - Pictures + nutrition info (**calories, protein, fat**).  
+- **📄 PDF Downloads** – Export diet plans as PDFs.  
+- **📚 Custom Food Database** – Add your own food items for next diet plan.  
+- **📈 User History** – Save past BMI & plans, with **Delete History** feature.  
+- **🤖 Advanced AI Dashboard** – Powered by Google Gemini API:  
+  1. Quick Meal Idea  
+  2. Meal Analyzer  
+  3. Full Day Plan Generator  
+  4. Ask Anything Chatbot  
 
-Icons: Bootstrap Icons
+---
 
-📂 Project Structure
+## 🛠️ Tech Stack
+
+- **Backend**: Python, Flask, Flask-SQLAlchemy, Flask-Login  
+- **Database**: SQLite  
+- **Frontend**: HTML, CSS, Jinja2, JavaScript  
+- **AI Integration**: Google Gemini API (`google-generativeai`)  
+- **PDF Generation**: WeasyPrint  
+- **Styling**: Bootstrap Icons  
+
+---
+
+## 📂 Project Structure
+
+```text
 calorie_app/
-├── app.py                  # Main Flask app entry point
-├── models.py               # SQLAlchemy database models
-├── requirements.txt        # Python dependencies
+├── .env                  # Secret API keys (Gemini, etc.)
+├── app.py                # Main Flask app entry point
+├── extensions.py         # Shared extensions (SQLAlchemy, LoginManager)
+├── models.py             # Database models
+├── requirements.txt      # Python dependencies
 │
-├── routes/                 # All route blueprints
-│   ├── bmi_routes.py       # Handles BMI calculation
-│   ├── diet_logic.py       # Core logic for generating diet plans
-│   ├── diet_routes.py      # Handles viewing plans and history
-│   └── food_routes.py      # Handles adding and listing foods
+├── instance/
+│   └── calorie_app.db    # SQLite database (auto-generated)
 │
-├── static/                 # Static files (CSS, images)
-│   ├── css/style.css
-│   └── hero-image.jpg
+├── routes/
+│   ├── __init__.py
+│   ├── ai_routes.py      # AI Dashboard (Gemini-powered features)
+│   ├── auth_routes.py    # Login, Register, Logout
+│   ├── bmi_routes.py     # BMI calculator logic
+│   ├── diet_logic.py     # Core diet plan generation logic
+│   ├── diet_routes.py    # Diet plan display, history, PDF downloads
+│   └── food_routes.py    # Add custom foods
 │
-└── templates/              # HTML files for rendering
-    ├── base.html           # Common layout (header/footer)
-    ├── index.html          # Homepage
-    ├── bmi.html            # BMI form page
-    ├── diet_result.html    # Diet results page
-    ├── diet.html           # 'My Latest Plan' page
-    ├── history.html        # User history page
-    └── add_food.html       # Form to add custom foods
-🚀 Setup and Installation
-Follow these steps to get the application running on your local machine.
+├── static/
+│   ├── css/
+│   │   └── style.css     # Custom styles
+│   └── images/
+│       ├── hero-image.jpg
+│       └── foods/        # Food item images
+│           ├── roti.jpg
+│           └── ...
+│
+└── templates/
+    ├── base.html
+    ├── index.html
+    ├── login.html
+    ├── register.html
+    ├── bmi.html
+    ├── add_food.html
+    ├── diet.html         # "My Latest Plan" page
+    ├── diet_result.html
+    ├── history.html
+    ├── ai_dashboard.html
+    └── plan_pdf.html     # PDF export template
+```
 
-1. Clone the Repository
-Bash
+# 🚀 Setup and Installation
 
+### 1. Clone the Repository
+
+```bash
 git clone <your-repository-url>
 cd calorie_app
-2. Create and Activate a Virtual Environment
-Windows:
 
-Bash
+```
 
+---
+
+### 2. Create & Activate a Virtual Environment
+
+**Windows (PowerShell):**
+
+```powershell
 python -m venv venv
 .\venv\Scripts\activate
-macOS / Linux:
 
-Bash
+```
 
+**macOS / Linux:**
+
+```bash
 python3 -m venv venv
 source venv/bin/activate
-3. Install Dependencies
-Install all the required Python packages from the requirements.txt file.
 
-Bash
+```
 
+---
+
+### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
-▶️ Usage
-1. Initialize the Database
-Before running the app for the first time, you need to create the database and its tables. Run the following commands in your terminal:
 
-Windows (Command Prompt):
+```
 
-Bash
+⚠️ Windows users: If WeasyPrint shows errors, install GTK for Windows.
 
-set FLASK_APP=app.py
-flask init-db
+---
+
+### 4. Setup Environment Variables
+
+Create a `.env` file in your project root and add:
+
+```
+GEMINI_API_KEY="your_secret_api_key_here"
+
+```
+
+---
+
+# ▶️ How to Run
+
+**Initialize the Database**
+
 Windows (PowerShell):
 
-Bash
-
+```powershell
 $env:FLASK_APP = "app.py"
 flask init-db
+
+```
+
 macOS / Linux:
 
-Bash
-
+```bash
 export FLASK_APP=app.py
 flask init-db
-You should see a confirmation message: Initialized the database.
 
-2. Run the Application
-Start the Flask development server:
+```
 
-Bash
+✔️ Expected output:
 
+```
+Initialized the database successfully.
+
+```
+
+---
+
+**Run the Application**
+
+```bash
 python app.py
-The application will be running at http://127.0.0.1:5000. Open this URL in your web browser to use the app.
+
+```
+
+App will run at 👉 [http://127.0.0.1:5000](http://127.0.0.1:5000/)
+
+---
+
+# 📦 Updating Requirements
+
+```bash
+pip freeze > requirements.txt
+
+```
+
+
+
+
+
+
