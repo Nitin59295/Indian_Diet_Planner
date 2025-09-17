@@ -15,9 +15,6 @@ The app calculates **BMI**, generates **personalized diet plans**, and leverages
 | :---: | :---: | :---: |
 | ![Homepage](static/images/screenshots/homepage.png) | ![Diet Plan](static/images/screenshots/diet_plan.png) | ![AI Dashboard](static/images/screenshots/ai_dashboard.png) |
 
-> 📝 Place your actual screenshots inside:  
-> `static/images/screenshots/`  
-> and replace these placeholder names.
 
 ---
 
